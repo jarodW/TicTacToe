@@ -27,12 +27,17 @@ public class PlayerService {
     }
 
     public Player createNewPlayer(PlayerDTO playerDTO) {
+        Player check = playerRepository.findOneByUserName(playerDTO.getUserName());
+        if(check != null)
+        	return null;
+        else{
         Player newPlayer = new Player();
         newPlayer.setUserName(playerDTO.getUserName());
         newPlayer.setPassword(passwordEncoder.encode(playerDTO.getPassword()));
         newPlayer.setEmail(playerDTO.getEmail());
         playerRepository.save(newPlayer);
         return newPlayer;
+        }
     }
 
     public Player getLoggedUser() {

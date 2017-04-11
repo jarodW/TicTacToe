@@ -93,11 +93,12 @@ gameModule.controller('playerGamesController', ['$scope', '$http', '$location', 
 gameModule.controller('gameController', ['$rootScope', '$routeParams', '$scope', '$http',
     function (rootScope, routeParams, scope, http) {
        var gameStatus;
-       getInitialData()
+       getInitialData();
 
         function getInitialData() {
 
            http.get('/game/' + routeParams.id).success(function (data) {
+        	   console.log(data);
                 scope.gameProperties = data;
                 gameStatus = scope.gameProperties.gameStatus;
                 getMoveHistory();
@@ -112,10 +113,10 @@ gameModule.controller('gameController', ['$rootScope', '$routeParams', '$scope',
           return  http.get('/move/list').success(function (data) {
                 scope.movesInGame = data;
                 scope.playerMoves = [];
-
                 //paint the board with positions from the retrieved moves
                 angular.forEach(scope.movesInGame, function(move) {
-                    scope.rows[move.boardRow - 1][move.boardColumn - 1].letter = move.playerPieceCode;
+                	console.log(move);
+                    scope.rows[move.boardRow - 1][move.boardColumn - 1].letter = move.playerPiece;
                 });
             }).error(function (data, status, headers, config) {
                 scope.errorMessage = "Failed to load moves in game"
@@ -131,27 +132,26 @@ gameModule.controller('gameController', ['$rootScope', '$routeParams', '$scope',
         }
 
         function getNextMove() {
-
-        scope.nextMoveData = []
-
-        // COMPUTER IS A SECOND PLAYER
-        if(!scope.gameProperties.secondPlayer) {
-            http.get("/move/autocreate").success(function (data, status, headers, config) {
-                scope.nextMoveData = data;
-                getMoveHistory().success(function () {
-                    var gameStatus = scope.movesInGame[scope.movesInGame.length - 1].gameStatus;
-                    if (gameStatus != 'IN_PROGRESS') {
-                        alert(gameStatus)
-                    }
-                });
-            }).error(function (data, status, headers, config) {
-                scope.errorMessage = "Can't send the move"
-            });
-
-            // SECOND PLAYER IS A REAL USER
-        } else {
-          console.log(' another player move');
-        }
+	        scope.nextMoveData = []
+	        // COMPUTER IS A SECOND PLAYER
+	        if(!scope.gameProperties.secondPlayer) {
+	            http.get("/move/autocreate").success(function (data, status, headers, config) {
+	                scope.nextMoveData = data;
+	                getMoveHistory().success(function () {
+	                    var gameStatus = scope.movesInGame[scope.movesInGame.length - 1].gameStatus;
+	                    if (gameStatus != 'IN_PROGRESS') {
+	                    	getMoveHistory();
+	                        alert(gameStatus);
+	                    }
+	                });
+	            }).error(function (data, status, headers, config) {
+	                scope.errorMessage = "Can't send the move"
+	            });
+	
+	            // SECOND PLAYER IS A REAL USER
+	        } else {
+	          console.log(' another player move');
+	        }
         }
 
         function checkIfBoardCellAvailable(boardRow, boardColumn) {
@@ -210,7 +210,8 @@ gameModule.controller('gameController', ['$rootScope', '$routeParams', '$scope',
                                 if (gameStatus == 'IN_PROGRESS') {
                                     getNextMove();
                                 } else {
-                                    alert(gameStatus)
+                                	getMoveHistory();
+                                    alert(gameStatus);
                                 }
                             });
 

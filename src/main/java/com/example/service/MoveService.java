@@ -47,8 +47,10 @@ public class MoveService {
 
     public Move autoCreateMove(Game game) {
         Move move = new Move();
-        move.setBoardColumn(GameLogic.nextAutoMove(getTakenMovePositionsInGame(game)).getBoardColumn());
-        move.setBoardRow(GameLogic.nextAutoMove(getTakenMovePositionsInGame(game)).getBoardRow());
+        Position pos = GameLogic.nextAutoMove(getBoard(game));
+        System.out.println("pos" + pos.getCol() + "  " + pos.getRow());
+        move.setBoardColumn(pos.getCol());
+        move.setBoardRow(pos.getRow());
         move.setCreated(new Date());
         move.setPlayer(null);
         move.setGame(game);
@@ -59,9 +61,9 @@ public class MoveService {
     }
 
     public GameStatus checkCurrentGameStatus(Game game) {
-        if (GameLogic.isWinner(getPlayerMovePositionsInGame(game, game.getFirstPlayer()))) {
+        if (GameLogic.isWinner(getBoard(game))) {
             return GameStatus.FIRST_PLAYER_WON;
-        } else if (GameLogic.isWinner(getPlayerMovePositionsInGame(game, game.getSecondPlayer()))) {
+        } else if (GameLogic.isWinner(getBoard(game))) {
             return GameStatus.SECOND_PLAYER_WON;
         } else if (GameLogic.isBoardIsFull(getTakenMovePositionsInGame(game))) {
             return GameStatus.TIE;
@@ -96,19 +98,19 @@ public class MoveService {
         return moves;
     }
 
-    public List<Position> getTakenMovePositionsInGame(Game game) {
-        return moveRepository.findByGame(game).stream()
-                .map(move -> new Position(move.getBoardRow(), move.getBoardColumn()))
-                .collect(Collectors.toList());
+    public List<Move> getTakenMovePositionsInGame(Game game) {
+        return moveRepository.findByGame(game);
     }
 
-    public List<Position> getPlayerMovePositionsInGame(Game game, Player player) {
-
-        return moveRepository.findByGameAndPlayer(game, player).stream()
-                .map(move -> new Position(move.getBoardRow(), move.getBoardColumn()))
-                .collect(Collectors.toList());
+    public int[][] getBoard(Game game) {
+    	int[][] board = new int[3][3];
+    	List<Move> movesInGame = moveRepository.findByGame(game);
+        for(Move move :  movesInGame) {
+            board[move.getBoardRow()-1][move.getBoardColumn()-1] = move.getPlayer() == game.getFirstPlayer() ? 1 :2;
+        }
+        return board;
     }
-
+    
     public int getTheNumberOfPlayerMovesInGame(Game game, Player player) {
         return moveRepository.countByGameAndPlayer(game, player);
     }

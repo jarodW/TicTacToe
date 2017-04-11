@@ -1,29 +1,39 @@
 var homepageModule = angular.module('homepageModule', []);
 
-homepageModule.controller('loginController', ['$rootScope', '$scope', '$http', '$location',
+homepageModule.controller('registerController', ['$scope', '$http', '$location','$window',
 
-    function (rootScope, scope, http, location) {
+    function ($scope, $http, $location,$window) {
 
-        rootScope.login = function () {
-        	
-        	var data = {username : scope.username, password : scope.password};
-            var params = JSON.stringify(data);
-            http.post("/login", params, {
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
-            }).success(function (data, status, headers, config) {
-            	console.log("suc");
-            	console.log(data);
-            }).error(function (data, status, headers, config) {
-            	console.log("err");
-              	console.log(data);
-              	console.log(status);
-              	console.log(headers);
-              	
-            });
+        $scope.register = function () {
+        	console.log("here");
+        	var data = {userName : $scope.username, password : $scope.password,  email: "q@q.com"};
+        	console.log(data.userName);
+    		$http.post("http://localhost:8080/player/create", data).success(function(re){
+    			console.log(re);
+    			$window.alert("Success");
+    		}).error(function(re){
+    			$window.alert("User Name Exist");
+    		});
         }
 
     }
 ]);
 
+homepageModule.controller('loginController', ['$scope', '$http', '$location','$window',
+
+    function ($scope, $http, $location,$window) {
+
+        $scope.login = function () {
+        	console.log("here");
+        	var data = {username : $scope.username, password : $scope.password};
+        	console.log(data.userName);
+    		$http.post("http://localhost:8080/login", data).success(function(re){
+    			console.log(re);
+    			$window.alert("Success");
+    		}).error(function(re){
+    			$window.alert("User Name Exist");
+    		});
+        }
+
+    }
+]);

@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.example.model.Game;
+import com.example.model.Move;
 import com.example.model.Position;
 
 public class GameLogic {
@@ -13,53 +14,135 @@ public class GameLogic {
 		this.game = game;
 	}
 	
-    static boolean isWinner(List<Position> positions) {
-
-        return checkWin().stream().anyMatch(positions::containsAll);
-    }
-    
-    static List<List<Position>> checkWin() {
-        List<List<Position>> winingPositions = new ArrayList<>();
-  
-        winingPositions.add(Arrays.asList(new Position(1, 1), new Position(1, 2), new Position(1,3)));
-        winingPositions.add(Arrays.asList(new Position(2, 1), new Position(2, 2), new Position(2,3)));
-        winingPositions.add(Arrays.asList(new Position(3, 1), new Position(3, 2), new Position(3,3)));
-
-        winingPositions.add(Arrays.asList(new Position(1, 1), new Position(2, 1), new Position(3,1)));
-        winingPositions.add(Arrays.asList(new Position(1, 2), new Position(2, 2), new Position(3,2)));
-        winingPositions.add(Arrays.asList(new Position(1, 3), new Position(2, 3), new Position(3,3)));
-
-        winingPositions.add(Arrays.asList(new Position(1, 1), new Position(2, 2), new Position(3,3)));
-        winingPositions.add(Arrays.asList(new Position(3, 1), new Position(2, 2), new Position(1,3)));
-
-        return winingPositions;
-    }
-    
-    static List<Position> getAllPositions() {
-        List<Position> positions = new ArrayList<>();
-        for (int row = 1; row <= 3; row++) {
-            for (int col = 1; col <= 3; col++) {
-                positions.add(new Position(row, col));
-            }
+    static boolean isWinner(int[][] moves) {
+    	
+        for (int row = 0; row<3; row++)
+        {
+            if (moves[row][0]==moves[row][1]  &&moves[row][1]==moves[row][2] && moves[row][0] != 0)
+            	return true;
         }
-        return positions;
+        
+        for(int col =  0;col<3; col++){
+            if (moves[0][col]==moves[1][col] &&moves[1][col]==moves[2][col]  && moves[0][col] != 0)
+            	return true;
+        }
+        
+        if (moves[0][0]==moves[1][1] && moves[1][1]==moves[2][2] && moves[1][1] != 0)
+        	return true;
+        if (moves[0][2]==moves[1][1] && moves[1][1]==moves[2][0] && moves[1][1] != 0)
+        	return true;
+        return false;
     }
-    
+        
     static boolean playerTurn(int numberOfFirstPlayerMovesInGame, int numberOfSecondPlayerMovesInGame) {
         return numberOfFirstPlayerMovesInGame == numberOfSecondPlayerMovesInGame || numberOfFirstPlayerMovesInGame == 0;
     }
 
-    static boolean isBoardIsFull(List<Position> takenPositions) {
-        return takenPositions.size() == 9;
+    static boolean isBoardIsFull(List<Move> moves) {
+        return moves.size() == 9;
     }
 
-    // GENERATE COMPUTER'S MOVES
-    static List<Position> getOpenPositions(List<Position> takenPositions) {
-        return getAllPositions().stream().filter(p -> !takenPositions.contains(p)).collect(Collectors.toList());
-   }
+	static Position nextAutoMove(int[][] board) {
+    	 int bestVal = -100;
+    	 int row = -1;
+    	 int col = -1;
+    	 
+    	 for (int i = 0; i<3; i++){
+    	     for (int j = 0; j<3; j++){
+    	         if (board[i][j]== 0){
+    	           board[i][j] = 2;
+    	             int moveVal = minimax(board, 0, false);    	 
+    	                board[i][j] = 0;
+    	                if (moveVal > bestVal){
+    	                    row = i;
+    	                    col = j;
+    	                    bestVal = moveVal;
+    	                }
+    	            }
+    	        }
+    	    }
+		return new Position(row+1,col+1);
+	}
 
-    static Position nextAutoMove(List<Position> takenPositions) {
-        return getOpenPositions(takenPositions).get(0);
-   }
+	private static int minimax(int[][] board, int depth, boolean isMaxamizer) {
+		
+		int score = score(board);
+		if(score == 10 || score == -10)
+			return score;
+		if(checkAvailable(board) == false)
+			return 0;
+		if(isMaxamizer){
+			int best = -100;
+			for(int i = 0; i <3; i++){
+				for(int j = 0; j < 3; j++){
+					if(board[i][j]==0){
+						board[i][j]  = 2;
+						best = Math.max(best, minimax(board,depth+1,!isMaxamizer));
+						board[i][j] = 0;
+					}
+				}
+			}
+			return best;
+		}else{
+			int best = 100;
+			for(int i = 0;i <3; i++){
+				for(int j = 0; j< 3;j++){
+					  if(board[i][j]==0){
+						  board[i][j] = 1;
+					  best = Math.max(best, minimax(board,depth+1,!isMaxamizer));
+					  board[i][j] = 0;
+					  }
+				}
+			}
+			return best;
+		}
+	}
+	
+    static int score(int[][] board) {
+    	
+        for (int row = 0; row<3; row++)
+        {
+            if (board[row][0]==board[row][1]  &&board[row][1]==board[row][2]){
+            	if(board[row][0] == 1)
+            		return -10;
+            	else if(board[row][0] == 2)
+            		return 10;
+            }
+        }
+        
+        for(int col =  0;col<3; col++){
+            if (board[0][col]==board[0][col] &&board[0][col]==board[0][col]){
+            	if(board[0][col] == 1)
+            		return -10;
+            	else if(board[0][col] == 2)
+            		return 10;
+            }
+           
+        }
+        
+        if (board[0][0]==board[1][1] && board[1][1]==board[2][2]){
+            if (board[0][0]==1)
+                return -10;
+            else if (board[0][0]==2)
+                return 10;
+        }
+        if (board[0][2]==board[1][1] && board[1][1]==board[2][0]){
+            if (board[0][0]==1)
+                return -10;
+            else if (board[0][0]==2)
+                return 10;
+        }
+        return 0;
+    }
+    
+    static boolean checkAvailable(int board[][]){
+    	for(int i = 0; i < 3; i ++){
+    		for(int j  =0; j < 3;j++){
+    			if(board[i][j] == 0)
+    				return true;
+    		}
+    	}
+    	return false;
+    }
 
 }

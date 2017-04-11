@@ -8,15 +8,16 @@ homePage.config(['$routeProvider', function($routeProvider) {
         when('/about', {
             templateUrl: 'templates/about.html'
         }).
-        when('/login', {
-            templateUrl: 'templates/login.html',
-            controller: 'loginController'
-        }).
         when('/home', {
             templateUrl: 'templates/home.html'
         }).
         when('/register', {
-            templateUrl: 'templates/register.html'
+            templateUrl: 'templates/register.html',
+            controller: 'registerController'
+        }).
+        when('/login',{
+        	templateUrl: 'templates/login.html',
+        	controller: 'loginController'
         }).
         otherwise({
             redirectTo: '/home'

@@ -17,7 +17,6 @@ import com.example.dto.CreateMoveDTO;
 import com.example.dto.MoveDTO;
 import com.example.model.Game;
 import com.example.model.Move;
-import com.example.model.Position;
 import com.example.service.GameService;
 import com.example.service.MoveService;
 import com.example.service.PlayerService;
@@ -74,12 +73,6 @@ public class MoveController {
         Long gameId = (Long) httpSession.getAttribute("gameId");
 
       return moveService.getMovesInGame(gameService.getGame(gameId));
-    }
-
-    @RequestMapping(value = "/check", method = RequestMethod.GET)
-    public List<Position> validateMoves() {
-        Long gameId = (Long) httpSession.getAttribute("gameId");
-        return moveService.getPlayerMovePositionsInGame(gameService.getGame(gameId), playerService.getLoggedUser());
     }
 
     @RequestMapping(value = "/turn", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

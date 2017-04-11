@@ -29,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-    				.antMatchers("/js/**", "/bower_components/**", "/images/**", "/css/**", "/templates/**","/homepage.html","/").permitAll()
+    				.antMatchers("/js/**", "/bower_components/**", "/images/**", "/css/**", "/templates/**","/homepage.html","/","/player/create","/login.html").permitAll()
                     .anyRequest().authenticated()
                 .and()
                      .formLogin()
@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                      .defaultSuccessUrl("/index.html")
                 .and()		
                 	.logout()
-					.logoutSuccessUrl("/login.html")
+					.logoutSuccessUrl("/homepage.html")
 					.permitAll()
                 .and()
                     .httpBasic()

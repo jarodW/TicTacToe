@@ -1,25 +1,22 @@
 package com.example.model;
 
 public class Position {
-    private int boardRow;
-    private int boardColumn;
-    public Position(){
-    	
-    }
-    public Position(int boardRow, int boardColumn){
-    	this.boardRow = boardRow;
-    	this.boardColumn = boardColumn;
-    }
-	public int getBoardRow() {
-		return boardRow;
+	int row;
+	int col;
+	public Position(int row,int col){
+		this.row  = row;
+		this.col = col;
 	}
-	public void setBoardRow(int boardRow) {
-		this.boardRow = boardRow;
+	public int getRow() {
+		return row;
 	}
-	public int getBoardColumn() {
-		return boardColumn;
+	public void setRow(int row) {
+		this.row = row;
 	}
-	public void setBoardColumn(int boardColumn) {
-		this.boardColumn = boardColumn;
+	public int getCol() {
+		return col;
+	}
+	public void setCol(int col) {
+		this.row = col;
 	}
 }
